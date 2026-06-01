@@ -1,59 +1,50 @@
 ---
 title: "Snap"
-description: "Build apps from reusable Blocks, then connect them to humans, agents, and other apps through Clients."
+description: "Build apps that humans, agents, and other apps can use together."
 ---
 
-Snap is a framework for building apps that humans, agents, and other apps can use together.
+Snap helps you build apps that can be used by people, AI agents, and other apps without rebuilding the same domain logic for every interface.
 
-You build a Snap App by composing reusable Blocks. Then you create Clients that connect to the App: a web UI for humans, an agent client for AI systems, or another app that needs to use the App's capabilities.
+Instead of starting from a UI or a server route, you start with the capabilities your app should provide. Then you connect those capabilities to the clients that need them: a web app, an agent, a CLI, a mobile app, or another Snap App.
 
 <Warning>
   Snap is currently a design-stage product. These docs describe the intended developer experience, not a stable public API.
 </Warning>
 
-## The three ideas
+## How Snap fits together
 
-Snap starts with three user-facing concepts:
+Snap starts with three ideas:
 
 1. **Apps** are the products you run and deploy.
 2. **Blocks** are reusable domain capabilities an App can use.
 3. **Clients** are how humans, agents, or other apps interact with an App.
 
-Engine details such as Primitives, Transport, kernels, and deployment internals sit underneath those concepts. You do not need to learn them before building your first App.
+## Build your first app in a snap
 
-## What the first App does
-
-The first milestone is a chat App:
-
-1. Create a Snap App.
-2. Install starter Blocks such as identity and chat.
-3. Add a web Client for a human.
-4. Add an agent Client that can join the same room.
-5. Run the App locally.
-6. Deploy the App and its configured Clients.
-
-That path proves the core idea without introducing factories, orchestration, registries, or hosted control-plane features.
-
-## CLI shape
-
-The intended CLI keeps the common App path first-class:
+Create an app, add the Blocks it needs, then run it locally:
 
 ```bash
-snap create <app>
-snap use <app>
-snap dev [app]
-snap deploy [app]
-snap modify [app]
+snap create todos
+snap use todos
+snap dev
 ```
 
-Blocks and Clients have their own commands when you need to add or create them:
+The App definition stays focused on what the app can do:
 
-```bash
-snap block create <name>
-snap block install <name>
+```ts
+import { app } from "@snaplab/snap";
+import { identity } from "@snaplab/core";
+import { todos } from "@leanbod/todos";
 
-snap client create <type>
+export default app("todos", {
+  blocks: [identity(), todos()]
+});
 ```
+
+From there, you can add a web Client for people, an agent Client that can help manage tasks, or another App that creates tasks from its own workflow.
+
+For the first milestone, the goal is simple: create an App, connect a human Client, connect an agent Client, and deploy the result.
+
 
 ## Start exploring
 
