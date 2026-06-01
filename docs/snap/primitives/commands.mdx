@@ -1,0 +1,46 @@
+---
+title: "Commands"
+description: "Short-lived server capabilities invoked by clients."
+---
+
+Command is the simplest Primitive. It is a short-lived server-side function that a Client can trigger.
+
+## When to use Commands
+
+Use a Command for server work that:
+
+1. Is initiated by a Client.
+2. Should finish quickly enough for the caller to wait.
+3. Is not inherently durable, retryable, or continuable.
+4. Produces an optional result.
+
+## Authoring sketch
+
+```ts
+import { command } from "snap";
+
+export const previewEmail = command("previewEmail", {
+  input: z.object({ subject: z.string(), body: z.string() }),
+  output: z.object({ html: z.string() }),
+  async run(input) {
+    return { html: renderEmail(input) };
+  }
+});
+```
+
+Commands are Result Mode Message operations. The Client sends the command over an identified session and waits for the declared output or failure.
+
+## Client projection
+
+The authored module may import server-only code. Client interfaces import generated command references instead of importing the authored module directly.
+
+```ts
+import { EmailSystem } from "my-app/client";
+import { useCommand } from "snap/react";
+
+const previewEmail = useCommand(EmailSystem.commands.previewEmail);
+```
+
+## Not for long-running work
+
+If the operation may run for a long time or need cancellation, use a Workflow. If the work should happen in the background and is not directly tied to a client call, use a Job. If the UI needs durable progress or status, model that state with a Document owned by the relevant System.

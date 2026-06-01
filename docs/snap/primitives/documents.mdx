@@ -1,0 +1,53 @@
+---
+title: "Documents"
+description: "Local-first data with schema, mutation, journaling, replication, links, and extents."
+---
+
+Document is the most complex Primitive. It models local-first data with schema, mutation behavior, authorization boundaries, journaling, and replication.
+
+## Terms
+
+Document Definition: the application-authored schema, mutation set, extent layout, and behavior declaration for a kind of Document.
+
+Document Record: one persisted Document with an id, authorization boundary, journal, and current data.
+
+Document Payload: a serialized view of a Document Record at a specific journal position.
+
+Document Mutation: a deterministic write function that may run optimistically on the Client and authoritatively on the Server.
+
+## Definition sketch
+
+```ts
+import { document, mutation } from "snap";
+
+export const project = document("project", {
+  schema: z.object({
+    name: z.string(),
+    description: z.string().optional()
+  }),
+  mutations: {
+    rename: mutation({
+      input: z.object({ name: z.string() }),
+      run(record, input) {
+        record.name = input.name;
+      }
+    })
+  }
+});
+```
+
+## Links
+
+Document Links connect one Document Record to another Document Record for loading and authorization relationships. Linked Documents remain separate Documents with their own records and journals.
+
+Client loading, subscriptions, and optimistic mutations generally require an identified session because Documents are authorization and replication boundaries.
+
+## Extents
+
+An Extent is part of a Document Record. It is a collection-shaped region of a Document that can be loaded sparsely without splitting authorization or ownership into another Document.
+
+Extents are intended for large, typically append-only lists that should support unloaded, partial, and loaded states.
+
+## Implementation status
+
+Document behavior is still in flux. Extents are not implemented yet, but they are a near-term design priority.

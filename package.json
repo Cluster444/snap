@@ -1,0 +1,12 @@
+{
+  "name": "snap",
+  "private": true,
+  "packageManager": "bun@1.3.14",
+  "scripts": {
+    "docs:snap:dev": "mise exec -y -C docs/snap -- bunx mint dev",
+    "docs:snap:validate": "mise exec -y -C docs/snap -- bunx mint validate",
+    "docs:snap:broken-links": "mise exec -y -C docs/snap -- bunx mint broken-links",
+    "docs:snap:a11y": "mise exec -y -C docs/snap -- bunx mint a11y",
+    "docs:snap:check": "bun run docs:snap:validate && bun run docs:snap:broken-links"
+  }
+}

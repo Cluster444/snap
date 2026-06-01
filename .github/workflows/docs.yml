@@ -1,0 +1,41 @@
+name: Docs
+
+on:
+  pull_request:
+    paths:
+      - "docs/snap/**"
+      - ".github/workflows/docs.yml"
+      - "package.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/snap/**"
+      - ".github/workflows/docs.yml"
+      - "package.json"
+
+jobs:
+  mintlify:
+    name: Mintlify
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs/snap
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Validate docs
+        run: bunx mint validate
+
+      - name: Check broken links
+        run: bunx mint broken-links

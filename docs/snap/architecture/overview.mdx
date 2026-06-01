@@ -1,0 +1,51 @@
+---
+title: "Overview"
+description: "The core architecture of a Snap App."
+---
+
+Snap has a small set of architectural concepts. Each concept has a narrow responsibility so applications can be assembled from reusable parts without coupling domain logic to a specific server, protocol, database, or UI framework.
+
+A Snap app is not itself the server. It is a portable application definition. A platform kernel, such as a development server, Cloudflare Worker kernel, Bun kernel, embedded runtime, or deterministic test harness, loads the app definition and runs it.
+
+## Architecture
+
+1. Application: the portable Snap app definition and startup composition root.
+2. Systems: product-specific domains and reusable support capabilities.
+3. Primitives: engine-owned execution and data patterns built on Transport.
+4. Transport: the platform-agnostic runtime boundary for Sessions, Connections, Operations, dispatch, and protocol adaptation.
+
+## Dependency direction
+
+Higher layers build on lower layers:
+
+```txt
+Application
+Systems
+Primitives
+Transport
+```
+
+Transport does not know about Systems. Systems usually do not use Transport directly. Primitive runtimes adapt common patterns onto Transport so most application authors work with higher-level concepts.
+
+Client and UI integrations sit outside this architecture. They use the client APIs exposed by Transport, Primitives, and Systems.
+
+## Why this matters
+
+This layering is what lets a Snap App run in different shapes:
+
+1. Embedded in one process for local apps or tests.
+2. Distributed across HTTP/WebSocket infrastructure.
+3. Simulated deterministically inside a single process.
+4. Eventually orchestrated as a fleet of many Snaps.
+
+## App-builder path
+
+Most app builders start at the top of the architecture:
+
+1. Export a Snap app definition.
+2. Install product and support Systems.
+3. Define Commands, Workflows, Jobs, and Documents inside those Systems.
+4. Build interfaces against generated client references.
+5. Let a selected runtime kernel run the app.
+
+Direct Transport usage is an advanced escape hatch for support Systems and platform-level behavior.

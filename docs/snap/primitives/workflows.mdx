@@ -1,0 +1,46 @@
+---
+title: "Workflows"
+description: "Longer-running server capabilities that coordinate durable domain work."
+---
+
+Workflows are designed for longer-running operations. They are similar to Commands, but they are allowed to run longer and coordinate multi-step server work.
+
+## When to use Workflows
+
+Use a Workflow for work that:
+
+1. Is initiated by a Client.
+2. May run longer than a Command should.
+3. Coordinates domain state over time.
+4. Needs cancellation.
+5. May eventually need durable checkpointing.
+
+## Authoring sketch
+
+```ts
+import { workflow } from "snap";
+
+export const importContacts = workflow("importContacts", {
+  input: z.object({ importId: z.string() }),
+  output: z.object({ imported: z.number() }),
+  async run(input) {
+    const importRun = await ContactImports.load(input.importId);
+
+    await ContactImports.mutations.markRunning(importRun);
+    const imported = await importContacts(importRun);
+    await ContactImports.mutations.markComplete(importRun, { imported });
+
+    return { imported };
+  }
+});
+```
+
+## Runtime shape
+
+A Workflow run starts through an acknowledgement-shaped Message over an identified session. The acknowledgement means the Server accepted the work. Completion, failure, and cancellation are runtime lifecycle outcomes.
+
+Domain progress should usually live in Documents owned by the System. In the example above, `ContactImports` is the durable status source. Client UI observes that Document instead of relying on a Workflow-specific progress channel.
+
+## Durability status
+
+Workflow persistence and checkpointing are not currently implemented. Durable Workflow behavior is a future design area.

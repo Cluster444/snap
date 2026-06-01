@@ -1,0 +1,49 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Snap",
+  "colors": {
+    "primary": "#2563eb"
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Start Here",
+        "pages": [
+          "index",
+          "quickstart",
+          "guides/project-structure",
+          "guides/build-a-system",
+          "guides/config-and-secrets"
+        ]
+      },
+      {
+        "group": "Architecture",
+        "pages": [
+          "architecture/overview",
+          "architecture/systems",
+          "architecture/primitives",
+          "architecture/application",
+          "architecture/transport"
+        ]
+      },
+      {
+        "group": "Primitives",
+        "pages": [
+          "primitives/commands",
+          "primitives/workflows",
+          "primitives/jobs",
+          "primitives/documents"
+        ]
+      },
+      {
+        "group": "Interfaces",
+        "pages": ["interfaces/clients"]
+      },
+      {
+        "group": "Reference",
+        "pages": ["reference/glossary", "reference/roadmap"]
+      }
+    ]
+  }
+}

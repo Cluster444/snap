@@ -1,0 +1,39 @@
+---
+title: "Jobs"
+description: "Background work definitions processed outside direct Transport handling."
+---
+
+Jobs are background work definitions. They are not invoked directly through Transport. Instead, they can be enqueued by Commands or Workflows, triggered by timers, scheduled for a future time, run from cron schedules, or tied to internal Trigger events.
+
+## When to use Jobs
+
+Use a Job for work that:
+
+1. Does not need a direct client response.
+2. Can run in the background.
+3. May be triggered by internal runtime events.
+4. May eventually need scheduling, retries, or durable queues.
+
+## Authoring sketch
+
+```ts
+import { job } from "snap";
+
+export const sendEmail = job("sendEmail", {
+  input: z.object({
+    to: z.string().email(),
+    subject: z.string(),
+    body: z.string()
+  }),
+  dedupeKey: (input) => `${input.to}:${input.subject}`,
+  async run(input) {
+    await sendMail(input);
+  }
+});
+```
+
+## Runtime status
+
+Jobs do not by default support Events and are not directly exposed through generated client interfaces. Commands, Workflows, timers, schedules, or internal runtime events enqueue them.
+
+Job durability, retries, and resumable execution are not guaranteed yet.

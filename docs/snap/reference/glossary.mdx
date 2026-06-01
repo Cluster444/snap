@@ -1,0 +1,88 @@
+---
+title: "Glossary"
+description: "Canonical language for Snap docs."
+---
+
+This glossary is the public Snap vocabulary. It should stay aligned with `packages/engine/VISION.md` and the engine domain docs.
+
+## Snap
+
+A portable application definition built from Systems and authored Primitives. A server, worker, native host, test harness, or development runtime loads the Snap and runs it with a platform kernel.
+
+## Transport
+
+The platform-agnostic runtime boundary for Sessions, Connections, Operations, dispatch, and protocol adaptation.
+
+Transport kernels are implementations of the Transport interface for specific runtime shapes, such as distributed HTTP/WebSocket, embedded local execution, or deterministic tests.
+
+## Session
+
+Transport continuity for a Client across multiple Requests and Connections. Sessions can be Anonymous or Identified through higher-level Systems such as Auth.
+
+## Connection
+
+A live transport channel required for Message and Event operations. Connections require an Identified Session by default.
+
+## Operation
+
+A declared unit of Transport communication. The intended public operation helpers are `request`, `submit`, `message`, and `event`.
+
+## Primitive
+
+An engine-owned execution or data pattern built on Transport, such as Command, Workflow, Job, or Document. Each Primitive has a built-in runtime that collects definitions and attaches the necessary server, client, durability, or Transport behavior.
+
+## Primitive Definition
+
+An application-authored definition contributed by a System through hard-coded slots such as `commands`, `workflows`, `jobs`, or `documents`.
+
+## System
+
+A composable domain unit that groups config, dependencies, authored Primitives, and server bindings.
+
+## Application System
+
+A product-specific System that owns application domain behavior.
+
+## Support System
+
+A reusable System that provides capabilities many applications can install, such as email, push notifications, billing, communications, auth, or observability.
+
+## Application
+
+The portable app definition that installs Systems, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for a platform kernel.
+
+## Command
+
+A short-lived server capability invoked by a Client and expected to return a result quickly.
+
+## Workflow
+
+A longer-running server capability that coordinates durable domain work and produces a lifecycle result.
+
+## Job
+
+A background work definition processed outside direct Transport request or message handling.
+
+## Document Definition
+
+The application-authored schema, mutation set, extent layout, and behavior declaration for a kind of Document.
+
+## Document Record
+
+One persisted Document with an id, authorization boundary, journal, and current data.
+
+## Document Payload
+
+A serialized view of a Document Record at a specific journal position.
+
+## Document Mutation
+
+A deterministic write function that may run optimistically on the Client and authoritatively on the Server.
+
+## Document Link
+
+A relationship connecting one Document Record to another Document Record for loading and authorization relationships.
+
+## Extent
+
+A collection-shaped region inside a Document Record that can be loaded sparsely without splitting authorization or ownership.

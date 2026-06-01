@@ -1,0 +1,106 @@
+---
+title: "Application"
+description: "The portable app definition that snaps Systems together."
+---
+
+The Application is the portable Snap app definition. It installs Systems, validates dependency order, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for the platform kernel that runs the app.
+
+The Application is not itself the server. A development server, Cloudflare Worker kernel, Bun kernel, embedded runtime, native host, or deterministic test harness loads the Application and runs it.
+
+## Responsibilities
+
+Application owns startup composition:
+
+1. Install Systems.
+2. Validate dependency order.
+3. Resolve config and secret references.
+4. Extract Primitive Definitions from authored Primitives.
+5. Initialize built-in Primitive runtimes.
+6. Expose the runtime shape that a platform kernel runs.
+
+The intended public authoring surface is a single app-definition helper:
+
+```ts
+import { snap } from "snap";
+
+export default snap.create((app) => {
+  app.use(EmailSystem);
+  app.use(ChatSystem);
+});
+```
+
+Inlining a System is valid when the System is small enough to stay readable:
+
+```ts
+export default snap.create((app) => {
+  app.use(system("chat", {
+    documents: { chatRoom }
+  }));
+});
+```
+
+## Collected definitions
+
+Application exposes collected Primitive Definitions through typed runtime collections:
+
+```ts
+Application.commands;
+Application.workflows;
+Application.jobs;
+Application.documents;
+```
+
+System-local definitions may remain accessible through their owning System:
+
+```ts
+EmailSystem.jobs.sendEmail;
+```
+
+Global Application collections may use qualified keys:
+
+```ts
+Application.jobs["email.sendEmail"];
+```
+
+## Config composition
+
+Every System provides a Config schema. Every top-level System gets its key as a top-level config key. Dependencies may also appear as nested config objects under the depending System.
+
+```ts
+export default snap.create((app) => {
+  app.use(EmailSystem, {
+    from: "hello@example.com",
+    apiUrl: "https://sendmail.com/api/v1"
+  });
+
+  app.use(BillingSystem, {
+    email: {
+      from: "billing@example.com"
+    }
+  });
+});
+```
+
+In this example, the billing-scoped email config inherits `apiUrl` from the global email config unless it is overridden.
+
+## Secrets
+
+Config values may reference secrets with strings beginning with `#!`.
+
+```ts
+app.use(EmailSystem, {
+  apiKey: "#!sendmail.apiKey"
+});
+```
+
+If a config string begins with `#!`, Snap treats it as a secret reference. If the referenced secret does not exist, config resolution fails hard. Literal config strings beginning with `#!` are not supported for now.
+
+## Running an Application
+
+The normal development path is for the Snap CLI to load the exported app definition and choose the development platform kernel:
+
+```bash
+snap dev packages/chat/app.ts
+```
+
+Production deployment should use the same app definition with a deployment-specific kernel. Cloudflare Workers are a natural first target because the app definition does not need to be tied to Bun or a long-running Node process.

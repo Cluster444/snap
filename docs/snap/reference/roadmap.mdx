@@ -1,0 +1,63 @@
+---
+title: "Roadmap"
+description: "What is in scope, unresolved, and out of scope for the first Snap direction."
+---
+
+This page tracks the current state of the Snap vision.
+
+## Phases
+
+1. Core App Model: Transport, Primitives, Systems, Application, config, and generated client references.
+2. Clients: CLI, TUI, React, Svelte, Solid, native, and agent interfaces built on the generated client surface.
+3. Orchestration: Snap Apps that can build, deploy, coordinate, and communicate with other Snap Apps.
+
+The Core App Model should be clarified before the docs expand detailed Client and Orchestration material.
+
+## In scope for the core concept
+
+1. Transport with Sessions, Connections, Requests, Messages, and Events.
+2. Built-in Primitives for Command, Workflow, Job, and Document.
+3. Systems as composable application and package units.
+4. Application as the assembly root.
+5. Config composition and secret references.
+6. Generated client references as the client boundary for authored primitives.
+
+## Resolved decisions
+
+1. `Primitive` is an internal engine concept, not public application API.
+2. Built-in Primitive runtimes are always available at Application initialization.
+3. Systems contribute authored Primitives through hard-coded slots.
+4. Every Primitive Definition has a stable `key`.
+5. Connections require an Identified Session by default.
+6. Operation Policies belong in server bindings/runtime, not shared client-facing Operation Definitions.
+7. Document Links and Extents are separate concepts.
+8. Secret references use the `#!` prefix and fail hard when unresolved.
+
+## Unresolved design
+
+1. Exact Primitive policy model.
+2. Workflow durability and checkpointing.
+3. Job durability, retries, scheduling, and resumable execution.
+4. Document Extent API and storage model.
+5. Typed dependency-scoped primitive access shape.
+6. Duplicate key behavior during Application collection.
+7. Final naming transition from current Snapshot code to Document/Snap terminology.
+
+## Out of scope for now
+
+1. User-defined Primitive types.
+2. Provider/controller reconciliation.
+3. Goal and Constraint Systems.
+4. Detailed Client interface guides.
+5. Fleet orchestration across many Snaps.
+6. Compile-time global dot access for every collected Primitive Definition.
+
+## Publication checklist
+
+Before presenting Snap publicly, we should add:
+
+1. A concise public positioning page.
+2. Working code examples or clearly labeled pseudo-code.
+3. A diagram for the five-layer architecture.
+4. A page explaining what exists today vs what is planned.
+5. A migration note from current engine Snapshot language if needed.

@@ -1,0 +1,91 @@
+---
+title: "Transport"
+description: "The platform-agnostic boundary for sessions, connections, and operations."
+---
+
+Transport is the foundation underneath Snap runtimes. It defines the protocol-neutral boundary between Client and Server while still supporting embedded and deterministic testing scenarios.
+
+Most app builders should not start here. Commands, Workflows, Jobs, and Documents build on Transport internally. Direct Transport authoring is an advanced path for support Systems and platform behavior.
+
+## Core concepts
+
+Transport provides three main concepts:
+
+1. Session: continuity across Requests and Connections.
+2. Connection: a live channel required for Messages and Events.
+3. Operation: a declared unit of communication.
+
+The intended public operation helpers are `request`, `submit`, `message`, and `event`.
+
+## Sessions
+
+Sessions are required. They let Transport keep a Client sticky to Server instances across multiple Requests without requiring a live Connection.
+
+A Session can be elevated from Anonymous to Identified by higher-level Systems such as Auth. Transport does not perform authentication, but it preserves the continuity that makes authentication useful.
+
+## Connections
+
+Connections require an Identified Session by default. This is a safety default because Connections enable long-lived Message and Event traffic that is usually tied to privileged actions, authorization, or auditing.
+
+If Snap later needs Anonymous Connections, that should be an explicit unsafe configuration path.
+
+Most client-facing primitives rely on identified sessions. Direct request-style Operations are the normal escape hatch for behavior that must run before a user is identified.
+
+## Operation definitions and bindings
+
+Operation Definitions declare protocol shape:
+
+1. Operation kind.
+2. Input schema.
+3. Output schema.
+4. Response mode.
+5. Channel requirements.
+
+Server Bindings attach handlers and server-side Policies. Policies are not part of shared client-facing Operation Definitions because they may depend on private server state, authorization rules, or implementation details.
+
+At the authoring layer, operation helpers expose server-authored and client-projected shapes similar to higher-level Primitives:
+
+```ts
+const health = request("health", {
+  input: z.void(),
+  output: z.object({ ok: z.boolean() }),
+  run() {
+    return { ok: true };
+  }
+});
+
+health.definition;
+health.run;
+```
+
+Most application authors should reach for Commands, Workflows, Jobs, or Documents first. Direct Operations are the lowest-level escape hatch.
+
+## Operation helpers
+
+The intended public helpers are:
+
+1. `request`: request/response work that can run without a live Connection and is useful for bootstrap or anonymous flows.
+2. `submit`: request-shaped submission where the caller needs acceptance but not a long-lived client event stream.
+3. `message`: client-to-server work over an identified Connection.
+4. `event`: server-to-client notifications over an identified Connection.
+
+Primitives primarily build on `message` and `event`. Systems can use `request` or `submit` when primitive behavior does not fit, especially for pre-auth flows where message/event channels are not valid.
+
+## Response modes
+
+Messages have three response modes:
+
+1. `none`: fire-and-forget.
+2. `ack`: wait until policy checks and input validation complete.
+3. `result`: wait for acceptance and later execution result.
+
+For Message operations, acceptance and execution are separate phases. Acceptance means the Server accepted the operation for execution. Result means the operation handler finished and produced its declared output or failure.
+
+## Transport kernels
+
+The public concept is Transport. A transport kernel is an implementation of the Transport interface for a specific runtime shape:
+
+1. Distributed kernel over HTTP/WebSocket.
+2. Integrated kernel for embedded local execution.
+3. Test kernel for deterministic simulation.
+4. Future protocol-specific kernels.

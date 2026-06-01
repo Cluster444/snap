@@ -1,0 +1,128 @@
+---
+title: "Quickstart"
+description: "The intended first user journey for building and running a Snap app."
+---
+
+A Snap app is a portable application definition. It is not itself a server. A server, worker, test harness, native host, or development runtime loads the app definition and runs it with a platform kernel.
+
+<Warning>
+  Snap is currently a design-stage concept. The examples on this page describe the intended public authoring flow before the implementation is fully aligned.
+</Warning>
+
+## 1. Create an app definition
+
+Start with a file that exports the Snap application definition.
+
+```ts
+// packages/chat/app.ts
+import { snap } from "snap";
+import { EmailSystem, IdentitySystem, PushSystem } from "snap/systems";
+import { ChatSystem } from "./chat";
+
+export default snap.create((app) => {
+  app.use(IdentitySystem);
+  app.use(PushSystem);
+  app.use(EmailSystem);
+  app.use(ChatSystem);
+});
+```
+
+The app definition chooses which Systems are installed. It does not normally choose the server implementation. The development CLI, Cloudflare Worker kernel, Bun kernel, embedded kernel, or test kernel can all load the same definition.
+
+## 2. Define a System
+
+Systems are the main domain authoring unit. A System can be application-specific, such as `chat`, or reusable support infrastructure, such as email, billing, push notifications, or communications.
+
+```ts
+// packages/chat/chat/index.ts
+import { document, mutation, system } from "snap";
+import { z } from "zod";
+
+const chatRoom = document("chatRoom", {
+  schema: z.object({
+    name: z.string(),
+    members: z.array(z.string()),
+    messages: z.array(z.object({
+      id: z.string(),
+      authorId: z.string(),
+      body: z.string(),
+      sentAt: z.string()
+    }))
+  }),
+  mutations: {
+    sendMessage: mutation({
+      input: z.object({ body: z.string() }),
+      run(room, input, ctx) {
+        room.messages.push({
+          id: ctx.id(),
+          authorId: ctx.session.userId,
+          body: input.body,
+          sentAt: ctx.now()
+        });
+      }
+    })
+  }
+});
+
+export const ChatSystem = system("chat", {
+  documents: { chatRoom }
+});
+```
+
+Small Systems can keep primitives inline. Larger Systems can split into files such as `documents.ts`, `commands.ts`, `workflows.ts`, and `jobs.ts`.
+
+## 3. Run the app in development
+
+The intended development command loads the exported app definition and runs it with the development platform kernel.
+
+```bash
+snap dev packages/chat/app.ts
+```
+
+The app definition stays portable. Changing from local development to Cloudflare, Bun, embedded execution, or deterministic tests should be a runtime choice, not a rewrite of product Systems.
+
+## 4. Add an interface
+
+Interfaces live under `apps/[product]/[interface-type]`.
+
+```txt
+apps/chat/web/app.tsx
+apps/chat/web/router.tsx
+apps/chat/web/pages/
+apps/chat/web/components/
+```
+
+Client code imports generated client references and framework adapters. It should not import server-authored primitive modules directly, because those modules may contain server-only imports.
+
+```ts
+import { ChatSystem } from "chat/client";
+import { useDocument } from "snap/react";
+
+const room = useDocument(ChatSystem.documents.chatRoom, roomId);
+```
+
+Generated client references are the boundary between server-authored Systems and UI code. In development, Snap should produce and refresh that client surface as the app changes. In production, builds can emit generated client code and types.
+
+## 5. Use lower-level Operations only when needed
+
+Most app builders should use Commands, Workflows, Jobs, and Documents. These primitives build on Transport internally and generally assume an identified session for client-initiated behavior.
+
+Support Systems sometimes need lower-level Transport Operations. Auth bootstrap, registration, password reset, health checks, and similar pre-auth behavior may need direct request-style operations because there is no identified session yet.
+
+The intended public operation helpers are:
+
+```ts
+import { request, submit, message, event } from "snap";
+```
+
+Most product Systems should not need these helpers directly.
+
+## What this example skipped
+
+This page intentionally avoids deployment and generated-client details that are still settling. The shape to remember is:
+
+1. Export a Snap app definition.
+2. Install product and support Systems.
+3. Define domain behavior through primitives inside Systems.
+4. Run the app through a selected runtime kernel.
+5. Build interfaces against generated client references.

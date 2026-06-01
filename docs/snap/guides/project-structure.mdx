@@ -1,0 +1,92 @@
+---
+title: "Project Structure"
+description: "Where Snap app definitions, product systems, and interfaces live."
+---
+
+A Snap app is a portable application definition. A server, worker, test harness, native host, or development runtime loads that definition and runs it with a platform kernel.
+
+Most projects separate three things:
+
+1. The Snap application definition.
+2. Product and support Systems.
+3. Interfaces that run on top of the client side of the app.
+
+## Recommended layout
+
+```txt
+apps/
+  chat/
+    web/
+      app.tsx
+      router.tsx
+      pages/
+      components/
+    cli/
+    tui/
+    mastra/
+
+packages/
+  chat/
+    app.ts
+    chat/
+      index.ts
+      documents.ts
+      commands.ts
+      workflows.ts
+      jobs.ts
+
+  web/
+    components/
+    pages/
+```
+
+`packages/[product]/app.ts` exports the Snap app definition. It chooses which Systems are installed, but it does not usually configure a server directly.
+
+```ts
+import { snap } from "snap";
+import { EmailSystem, IdentitySystem, PushSystem } from "snap/systems";
+import { ChatSystem } from "./chat";
+
+export default snap.create((app) => {
+  app.use(IdentitySystem);
+  app.use(PushSystem);
+  app.use(EmailSystem);
+  app.use(ChatSystem);
+});
+```
+
+The development runtime can load this file and run it:
+
+```bash
+snap dev packages/chat/app.ts
+```
+
+The same app definition can later be loaded by a Cloudflare Worker kernel, a Bun kernel, an embedded local kernel, or a deterministic test kernel.
+
+## Interfaces
+
+Interfaces live under `apps/[product]/[interface-type]`.
+
+Common interface types include:
+
+1. `web` for a browser app.
+2. `cli` for a command-line interface.
+3. `tui` for a terminal UI.
+4. `ios` or `android` for native clients.
+5. `mastra` or another agent framework directory for agentic clients.
+
+Interface code imports generated client references and framework adapters. It should not import server-authored primitive modules directly.
+
+## Systems
+
+Product-specific Systems usually live under `packages/[product]/[system]`.
+
+```txt
+packages/chat/chat/index.ts
+packages/chat/chat/documents.ts
+packages/chat/chat/commands.ts
+```
+
+Small Systems can define primitives inline in `index.ts`. Larger Systems can split by primitive type, feature area, or runtime concern. Snap does not prescribe one internal file layout; keep files readable and keep domain boundaries clear.
+
+Shared interface code can live in packages such as `packages/web` when multiple apps reuse pages, components, or design-system pieces.
