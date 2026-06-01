@@ -5,7 +5,7 @@ description: "The platform-agnostic boundary for sessions, connections, and oper
 
 Transport is the foundation underneath Snap runtimes. It defines the protocol-neutral boundary between Client and Server while still supporting embedded and deterministic testing scenarios.
 
-Most app builders should not start here. Commands, Workflows, Jobs, and Documents build on Transport internally. Direct Transport authoring is an advanced path for support Systems and platform behavior.
+Most app builders should not start here. Commands, Workflows, Jobs, and Documents build on Transport internally. Direct Transport authoring is an advanced path for Blocks and platform behavior.
 
 ## Core concepts
 
@@ -21,7 +21,7 @@ The intended public operation helpers are `request`, `submit`, `message`, and `e
 
 Sessions are required. They let Transport keep a Client sticky to Server instances across multiple Requests without requiring a live Connection.
 
-A Session can be elevated from Anonymous to Identified by higher-level Systems such as Auth. Transport does not perform authentication, but it preserves the continuity that makes authentication useful.
+A Session can be elevated from Anonymous to Identified by higher-level Blocks such as Auth or Identity. Transport does not perform authentication, but it preserves the continuity that makes authentication useful.
 
 ## Connections
 
@@ -69,7 +69,7 @@ The intended public helpers are:
 3. `message`: client-to-server work over an identified Connection.
 4. `event`: server-to-client notifications over an identified Connection.
 
-Primitives primarily build on `message` and `event`. Systems can use `request` or `submit` when primitive behavior does not fit, especially for pre-auth flows where message/event channels are not valid.
+Primitives primarily build on `message` and `event`. Blocks can use `request` or `submit` when primitive behavior does not fit, especially for pre-auth flows where message/event channels are not valid.
 
 ## Response modes
 

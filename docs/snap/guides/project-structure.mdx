@@ -1,92 +1,88 @@
 ---
 title: "Project Structure"
-description: "Where Snap app definitions, product systems, and interfaces live."
+description: "Where Snap Apps, Blocks, and Clients live in a workspace."
 ---
 
-A Snap app is a portable application definition. A server, worker, test harness, native host, or development runtime loads that definition and runs it with a platform kernel.
+A Snap workspace separates reusable domain packages from deployed products.
 
 Most projects separate three things:
 
-1. The Snap application definition.
-2. Product and support Systems.
-3. Interfaces that run on top of the client side of the app.
+1. Packages that provide reusable Blocks.
+2. Apps that compose Blocks into deployed products.
+3. Clients that let humans, agents, or other apps interact with an App.
 
 ## Recommended layout
 
 ```txt
 apps/
   chat/
+    app.ts
     web/
       app.tsx
       router.tsx
       pages/
       components/
-    cli/
-    tui/
-    mastra/
+    agent/
+      agent.ts
 
 packages/
-  chat/
-    app.ts
+  engine/
+  core/
+  leanbod/
     chat/
-      index.ts
-      documents.ts
-      commands.ts
-      workflows.ts
-      jobs.ts
-
-  web/
-    components/
-    pages/
+    push/
 ```
 
-`packages/[product]/app.ts` exports the Snap app definition. It chooses which Systems are installed, but it does not usually configure a server directly.
+`apps/[app]/app.ts` exports the Snap App definition. It chooses which Blocks are installed for that product.
 
 ```ts
-import { snap } from "snap";
-import { EmailSystem, IdentitySystem, PushSystem } from "snap/systems";
-import { ChatSystem } from "./chat";
+import { app } from "@snaplab/snap";
+import { identity } from "@snaplab/core";
+import { chat } from "@leanbod/chat";
+import { push } from "@leanbod/push";
 
-export default snap.create((app) => {
-  app.use(IdentitySystem);
-  app.use(PushSystem);
-  app.use(EmailSystem);
-  app.use(ChatSystem);
+export default app("chat", {
+  blocks: [identity(), chat(), push()]
 });
 ```
 
-The development runtime can load this file and run it:
+The development runtime can load the selected App and run it:
 
 ```bash
-snap dev packages/chat/app.ts
+snap use chat
+snap dev
 ```
 
-The same app definition can later be loaded by a Cloudflare Worker kernel, a Bun kernel, an embedded local kernel, or a deterministic test kernel.
+The same App definition should later be deployable through different engine-supported targets.
 
-## Interfaces
+## Clients
 
-Interfaces live under `apps/[product]/[interface-type]`.
+Clients live under `apps/[app]/[client-type]`.
 
-Common interface types include:
+Common Client types include:
 
 1. `web` for a browser app.
 2. `cli` for a command-line interface.
 3. `tui` for a terminal UI.
 4. `ios` or `android` for native clients.
-5. `mastra` or another agent framework directory for agentic clients.
+5. `agent`, `mastra`, or another agent framework directory for agent Clients.
 
-Interface code imports generated client references and framework adapters. It should not import server-authored primitive modules directly.
+Client code imports generated client references and framework adapters. It should not import the server-authored internals of a Block directly.
 
-## Systems
+## Blocks
 
-Product-specific Systems usually live under `packages/[product]/[system]`.
+Blocks live in packages because they are reusable domain models.
 
 ```txt
-packages/chat/chat/index.ts
-packages/chat/chat/documents.ts
-packages/chat/chat/commands.ts
+packages/leanbod/chat/index.ts
+packages/leanbod/chat/documents.ts
+packages/leanbod/chat/commands.ts
 ```
 
-Small Systems can define primitives inline in `index.ts`. Larger Systems can split by primitive type, feature area, or runtime concern. Snap does not prescribe one internal file layout; keep files readable and keep domain boundaries clear.
+Small Blocks can define their internals inline. Larger Blocks can split by feature area, primitive type, or runtime concern. Snap should not prescribe one internal file layout; keep files readable and keep domain boundaries clear.
 
-Shared interface code can live in packages such as `packages/web` when multiple apps reuse pages, components, or design-system pieces.
+## Deployment
+
+Deployment support is expected to live in the engine, not inside each App directory.
+
+An App defines what should run. A deployment target defines how to run it. The first target is expected to focus on a Bun-based deployment that can package a small server and React Client together, while other targets may deploy the App and Clients separately.

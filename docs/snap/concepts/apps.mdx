@@ -1,0 +1,47 @@
+---
+title: "Apps"
+description: "The product boundary in Snap."
+---
+
+A Snap App is the product you run and deploy.
+
+It does not need to contain all of its domain logic directly. Instead, an App composes Blocks and configures them for a specific product.
+
+## What belongs in an App
+
+An App definition should answer:
+
+1. What is this product called?
+2. Which Blocks does it use?
+3. How are those Blocks configured?
+4. Which Clients should be able to connect to it?
+
+Example:
+
+```ts
+import { app } from "@snaplab/snap";
+import { identity } from "@snaplab/core";
+import { chat } from "@leanbod/chat";
+import { push } from "@leanbod/push";
+
+export default app("chat", {
+  blocks: [identity(), chat(), push()]
+});
+```
+
+## Apps are not packages
+
+Packages hold reusable domain models. Apps choose which packages to use.
+
+This means an App name does not need to match a package name. A product called `snapchat` might use Blocks from `@leanbod/chat`, `@leanbod/push`, and `@snaplab/core`.
+
+## Apps are not Clients
+
+An App can have many Clients:
+
+1. Web Client.
+2. Agent Client.
+3. CLI or TUI Client.
+4. Another App using its client surface.
+
+The App owns the domain surface. Clients decide how to interact with it.

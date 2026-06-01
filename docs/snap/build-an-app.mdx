@@ -1,0 +1,93 @@
+---
+title: "Build an App"
+description: "Create a Snap App from starter Blocks and run it locally."
+---
+
+A Snap App is the product you run. It chooses which Blocks are installed and how they are configured for that product.
+
+<Warning>
+  This page describes the intended first App journey. The commands and package names may change while Snap is still design-stage.
+</Warning>
+
+## Create the App
+
+Start with a new App:
+
+```bash
+snap create chat
+```
+
+The create flow should help you choose starter Blocks and Clients. For the first milestone, the chat App should start with:
+
+1. Core identity or session support.
+2. A chat Block for rooms and messages.
+3. A web Client for humans.
+4. An agent Client that can join a room and reply when mentioned.
+
+The generated structure should stay small:
+
+```txt
+apps/
+  chat/
+    app.ts
+    web/
+      app.tsx
+      router.tsx
+    agent/
+      agent.ts
+```
+
+The App definition imports reusable domain Blocks from packages:
+
+```ts
+import { app } from "@snaplab/snap";
+import { identity } from "@snaplab/core";
+import { chat } from "@leanbod/chat";
+
+export default app("chat", {
+  blocks: [identity(), chat()]
+});
+```
+
+## Set the default App
+
+Use the App so later commands can omit its name:
+
+```bash
+snap use chat
+```
+
+Then run it locally:
+
+```bash
+snap dev
+```
+
+You can still target an App explicitly:
+
+```bash
+snap dev chat
+```
+
+## Add app-specific behavior
+
+Starter Blocks should get you running. App-specific behavior can be added by creating or installing more Blocks:
+
+```bash
+snap block create moderation
+snap block install @leanbod/push
+```
+
+Blocks are domain models. They can be reused across Apps, embedded in larger Apps, or packaged for other teams to install.
+
+## Success state
+
+The first local success state is intentionally small:
+
+1. The App starts locally.
+2. A human can open the web Client.
+3. The human can send a message in a room.
+4. An agent Client can join the room.
+5. The agent can reply when mentioned.
+
+That is enough to prove the App, Block, and Client model before adding factories, orchestration, or hosted platform features.

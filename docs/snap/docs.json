@@ -11,20 +11,29 @@
         "group": "Start Here",
         "pages": [
           "index",
-          "quickstart",
-          "guides/project-structure",
-          "guides/build-a-system",
-          "guides/config-and-secrets"
+          "install",
+          "build-an-app",
+          "create-a-client",
+          "deploy-an-app"
         ]
       },
       {
-        "group": "Architecture",
+        "group": "Concepts",
+        "pages": [
+          "concepts/apps",
+          "concepts/blocks",
+          "concepts/clients",
+          "guides/project-structure"
+        ]
+      },
+      {
+        "group": "Engine",
         "pages": [
           "architecture/overview",
-          "architecture/systems",
           "architecture/primitives",
           "architecture/application",
-          "architecture/transport"
+          "architecture/transport",
+          "guides/config-and-secrets"
         ]
       },
       {
@@ -37,12 +46,8 @@
         ]
       },
       {
-        "group": "Interfaces",
-        "pages": ["interfaces/clients"]
-      },
-      {
         "group": "Reference",
-        "pages": ["reference/glossary", "reference/roadmap"]
+        "pages": ["reference/cli", "reference/glossary", "reference/roadmap"]
       }
     ]
   }

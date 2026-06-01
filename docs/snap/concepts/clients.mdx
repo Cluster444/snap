@@ -1,0 +1,40 @@
+---
+title: "Clients"
+description: "The ways humans, agents, and apps interact with a Snap App."
+---
+
+Clients interact with a Snap App.
+
+A Client can be a web UI, CLI, TUI, mobile app, agent process, or another Snap App.
+
+## Clients use the App surface
+
+Clients should not need to understand the internal files that define a Block. They should use the App's generated client surface.
+
+That lets a frontend developer or coding agent build a Client without owning the domain model.
+
+## Human Clients
+
+Human Clients include browser apps, native apps, CLIs, and TUIs.
+
+Create one with:
+
+```bash
+snap client create web
+```
+
+Snap should wire the Client to the App. The product UI stays user-authored.
+
+## Agent Clients
+
+Agent Clients connect AI systems to an App.
+
+For the first milestone, an agent Client only needs to join a chat room and reply when mentioned.
+
+Later, agent Clients can receive permissions to interact with other Apps, but that is outside the first milestone.
+
+## App Clients
+
+Another App can also be a Client.
+
+This enables deterministic app-to-app integration, such as an alerts App posting into a chat App. That path builds on the same Client model, but it can wait until the human and agent Client path is working.

@@ -3,7 +3,7 @@ title: "Primitives"
 description: "Engine-owned execution and data patterns built on Transport."
 ---
 
-Primitives are built-in Snap runtime families. They provide common execution and data patterns so Systems do not have to define raw Transport Operations for common behavior.
+Primitives are built-in Snap runtime families. They provide common execution and data patterns so Blocks do not have to define raw Transport Operations for common behavior.
 
 ## Built-in primitives
 
@@ -14,7 +14,7 @@ Snap currently centers on four primary Primitives:
 3. Job: background work outside direct Transport handling.
 4. Document: local-first data with schema, mutations, journaling, and replication.
 
-Client-facing Primitives generally assume an identified session. Support Systems that need anonymous or pre-auth behavior should use direct request-style Transport Operations instead.
+Client-facing Primitives generally assume an identified session. Blocks that need anonymous or pre-auth behavior should use direct request-style Transport Operations instead.
 
 ## Internal runtime concept
 
@@ -33,7 +33,7 @@ Each Primitive supplies:
 
 1. A Definition shape with a stable `key`.
 2. A public authoring function such as `command(...)` or `document(...)`.
-3. A runtime that collects definitions from installed Systems.
+3. A runtime that collects definitions from installed Blocks.
 4. Optional server behavior, such as `run` for Commands and Workflows.
 5. Optional Transport operations.
 6. Optional Client APIs and UI adapters.
@@ -62,24 +62,24 @@ The `definition` is the shared shape Snap can collect and project into generated
 
 ## Collection
 
-Systems contribute authored Primitives through hard-coded slots:
+Blocks contribute authored Primitives through hard-coded slots:
 
 ```ts
-system("email", {
-  commands: { previewEmail },
-  workflows: { importContacts },
-  jobs: { sendEmail },
-  documents: { emailTemplate }
+system("chat", {
+  commands: { sendMessage },
+  workflows: { summarizeRoom },
+  jobs: { pruneMessages },
+  documents: { room }
 });
 ```
 
-Primitive keys are authored locally inside a System. During Application initialization, the Application extracts Primitive Definitions and may qualify keys with the owning System key for global lookup and wire protocol identity.
+Primitive keys are authored locally inside a Block. During Application initialization, the Application extracts Primitive Definitions and may qualify keys with the owning Block key for global lookup and wire protocol identity.
 
 ```ts
-EmailSystem.jobs.sendEmail;
-Application.jobs["email.sendEmail"];
+chat.commands.sendMessage;
+Application.commands["chat.sendMessage"];
 ```
 
 ## Runtime ownership
 
-Primitive runtimes are part of Snap. Systems do not install `CommandSystem`, `WorkflowSystem`, `JobSystem`, or `DocumentSystem`. These runtimes are always available when the Application initializes.
+Primitive runtimes are part of Snap. Blocks do not install `CommandSystem`, `WorkflowSystem`, `JobSystem`, or `DocumentSystem`. These runtimes are always available when the Application initializes.

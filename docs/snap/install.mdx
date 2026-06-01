@@ -1,0 +1,58 @@
+---
+title: "Install"
+description: "Install and run the intended Snap CLI."
+---
+
+Snap's CLI package name is expected to live under the Snap Lab scope because the unscoped `snap` package name is not available.
+
+<Warning>
+  The CLI is not implemented yet. This page documents the intended setup flow so the product story can be reviewed before implementation starts.
+</Warning>
+
+## Requirements
+
+The first implementation path is expected to use Bun for local development and package scripts.
+
+```bash
+bun --version
+```
+
+## Run the CLI
+
+During early development, the CLI should be runnable without a global install:
+
+```bash
+bunx @snaplab/snap --help
+```
+
+After installing it globally, the command should be available as `snap`:
+
+```bash
+bun add -g @snaplab/snap
+snap --help
+```
+
+## First commands
+
+The core App workflow should be available at the top level:
+
+```bash
+snap create <app>
+snap use <app>
+snap dev [app]
+snap deploy [app]
+snap modify [app]
+```
+
+Blocks and Clients are created or installed through resource commands:
+
+```bash
+snap block create <name>
+snap block install <name>
+
+snap client create <type>
+```
+
+## Next step
+
+Create an App from starter Blocks in [Build an App](/build-an-app).

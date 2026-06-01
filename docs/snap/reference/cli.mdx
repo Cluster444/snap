@@ -1,0 +1,75 @@
+---
+title: "CLI"
+description: "The intended early Snap CLI surface."
+---
+
+The Snap CLI should make Apps the default happy path.
+
+<Warning>
+  This command surface is a planning reference. The CLI is not implemented yet.
+</Warning>
+
+## App commands
+
+Create an App:
+
+```bash
+snap create <app>
+```
+
+Set the default App for later commands:
+
+```bash
+snap use <app>
+```
+
+Run an App locally:
+
+```bash
+snap dev [app]
+```
+
+Deploy an App and its configured Clients:
+
+```bash
+snap deploy [app]
+```
+
+Open an App modification flow:
+
+```bash
+snap modify [app]
+```
+
+## Block commands
+
+Create a Block:
+
+```bash
+snap block create <name>
+```
+
+Install a Block into the current App:
+
+```bash
+snap block install <name>
+```
+
+## Client commands
+
+Create a Client for the current App:
+
+```bash
+snap client create <type>
+```
+
+Examples:
+
+```bash
+snap client create web
+snap client create agent
+```
+
+## Deferred commands
+
+Registry, hosted auth, org, project, deployment listing, and deployment introspection commands are intentionally deferred until the App and Client paths are working.

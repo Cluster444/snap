@@ -1,0 +1,57 @@
+---
+title: "Blocks"
+description: "Reusable domain models that Apps can compose."
+---
+
+Blocks are reusable domain capabilities.
+
+An App installs Blocks to gain behavior such as chat, push notifications, identity, billing, nutrition, recipes, or task management.
+
+## Blocks live in packages
+
+Outside of the engine, packages are best thought of as domain models:
+
+```txt
+packages/
+  engine/
+  core/
+  leanbod/
+    chat/
+    push/
+    nutrition/
+```
+
+The engine makes Blocks possible. Other packages provide Blocks that Apps can install.
+
+## Blocks can be reused
+
+A chat Block is not the same thing as a chat App.
+
+The same chat Block could be used by:
+
+1. A standalone chat product.
+2. A support desk App.
+3. An internal operations App.
+4. A larger suite that embeds chat in several products.
+
+The App decides which parts of a Block to use and how to expose them through Clients.
+
+## Create a Block
+
+Create an app-specific or reusable Block:
+
+```bash
+snap block create moderation
+```
+
+Install an existing Block into the current App:
+
+```bash
+snap block install @leanbod/chat
+```
+
+## Optional UI kits
+
+Blocks may eventually provide optional UI kits, but the Block should not force the App to use them.
+
+For example, a chat Block may expose a React room component. A team can use it, replace it, or ignore it.

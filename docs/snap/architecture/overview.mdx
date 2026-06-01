@@ -1,16 +1,16 @@
 ---
 title: "Overview"
-description: "The core architecture of a Snap App."
+description: "The engine concepts underneath Apps, Blocks, and Clients."
 ---
 
-Snap has a small set of architectural concepts. Each concept has a narrow responsibility so applications can be assembled from reusable parts without coupling domain logic to a specific server, protocol, database, or UI framework.
+The engine is the layer underneath Snap's user-facing App, Block, and Client model.
 
-A Snap app is not itself the server. It is a portable application definition. A platform kernel, such as a development server, Cloudflare Worker kernel, Bun kernel, embedded runtime, or deterministic test harness, loads the app definition and runs it.
+Most app builders should start with Apps, Blocks, and Clients. Engine concepts explain how Snap can collect Block definitions, expose client surfaces, and run the same App through different runtime or deployment targets.
 
 ## Architecture
 
-1. Application: the portable Snap app definition and startup composition root.
-2. Systems: product-specific domains and reusable support capabilities.
+1. Application: the portable Snap App definition and startup composition root.
+2. Blocks: reusable domain capabilities installed into an App.
 3. Primitives: engine-owned execution and data patterns built on Transport.
 4. Transport: the platform-agnostic runtime boundary for Sessions, Connections, Operations, dispatch, and protocol adaptation.
 
@@ -20,14 +20,14 @@ Higher layers build on lower layers:
 
 ```txt
 Application
-Systems
+Blocks
 Primitives
 Transport
 ```
 
-Transport does not know about Systems. Systems usually do not use Transport directly. Primitive runtimes adapt common patterns onto Transport so most application authors work with higher-level concepts.
+Transport does not know about Blocks. Blocks usually do not use Transport directly. Primitive runtimes adapt common patterns onto Transport so most application authors work with higher-level concepts.
 
-Client and UI integrations sit outside this architecture. They use the client APIs exposed by Transport, Primitives, and Systems.
+Clients sit outside this engine architecture. They use the client APIs exposed by the App surface.
 
 ## Why this matters
 
@@ -43,9 +43,9 @@ This layering is what lets a Snap App run in different shapes:
 Most app builders start at the top of the architecture:
 
 1. Export a Snap app definition.
-2. Install product and support Systems.
-3. Define Commands, Workflows, Jobs, and Documents inside those Systems.
+2. Install reusable Blocks.
+3. Define Commands, Workflows, Jobs, and Documents inside those Blocks.
 4. Build interfaces against generated client references.
 5. Let a selected runtime kernel run the app.
 
-Direct Transport usage is an advanced escape hatch for support Systems and platform-level behavior.
+Direct Transport usage is an advanced escape hatch for Blocks and platform-level behavior.

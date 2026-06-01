@@ -3,11 +3,23 @@ title: "Glossary"
 description: "Canonical language for Snap docs."
 ---
 
-This glossary is the public Snap vocabulary. It should stay aligned with `packages/engine/VISION.md` and the engine domain docs.
+This glossary is the public Snap vocabulary. It should stay aligned with the product direction and engine domain docs.
 
 ## Snap
 
-A portable application definition built from Systems and authored Primitives. A server, worker, native host, test harness, or development runtime loads the Snap and runs it with a platform kernel.
+A framework for building Apps from reusable Blocks, then connecting those Apps to humans, agents, and other apps through Clients.
+
+## App
+
+The product you run and deploy. An App composes Blocks and exposes a domain surface that Clients can use.
+
+## Block
+
+A reusable domain capability that an App can install, such as chat, push notifications, identity, billing, nutrition, recipes, or task management.
+
+## Client
+
+A human, agent, or app interface that interacts with a Snap App. Examples include web UIs, CLIs, TUIs, mobile apps, agent clients, and other Snap Apps.
 
 ## Transport
 
@@ -17,7 +29,7 @@ Transport kernels are implementations of the Transport interface for specific ru
 
 ## Session
 
-Transport continuity for a Client across multiple Requests and Connections. Sessions can be Anonymous or Identified through higher-level Systems such as Auth.
+Transport continuity for a Client across multiple Requests and Connections. Sessions can be Anonymous or Identified through higher-level Blocks such as Auth or Identity.
 
 ## Connection
 
@@ -33,23 +45,11 @@ An engine-owned execution or data pattern built on Transport, such as Command, W
 
 ## Primitive Definition
 
-An application-authored definition contributed by a System through hard-coded slots such as `commands`, `workflows`, `jobs`, or `documents`.
-
-## System
-
-A composable domain unit that groups config, dependencies, authored Primitives, and server bindings.
-
-## Application System
-
-A product-specific System that owns application domain behavior.
-
-## Support System
-
-A reusable System that provides capabilities many applications can install, such as email, push notifications, billing, communications, auth, or observability.
+An application-authored definition contributed by a Block through hard-coded slots such as `commands`, `workflows`, `jobs`, or `documents`.
 
 ## Application
 
-The portable app definition that installs Systems, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for a platform kernel.
+The engine view of a Snap App definition. It installs Blocks, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for a runtime or deployment target.
 
 ## Command
 

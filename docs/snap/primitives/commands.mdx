@@ -35,12 +35,12 @@ Commands are Result Mode Message operations. The Client sends the command over a
 The authored module may import server-only code. Client interfaces import generated command references instead of importing the authored module directly.
 
 ```ts
-import { EmailSystem } from "my-app/client";
+import { chat } from "my-app/client";
 import { useCommand } from "snap/react";
 
-const previewEmail = useCommand(EmailSystem.commands.previewEmail);
+const sendMessage = useCommand(chat.commands.sendMessage);
 ```
 
 ## Not for long-running work
 
-If the operation may run for a long time or need cancellation, use a Workflow. If the work should happen in the background and is not directly tied to a client call, use a Job. If the UI needs durable progress or status, model that state with a Document owned by the relevant System.
+If the operation may run for a long time or need cancellation, use a Workflow. If the work should happen in the background and is not directly tied to a client call, use a Job. If the UI needs durable progress or status, model that state with a Document owned by the relevant Block.

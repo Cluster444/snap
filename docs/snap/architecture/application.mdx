@@ -1,9 +1,9 @@
 ---
 title: "Application"
-description: "The portable app definition that snaps Systems together."
+description: "The portable App definition that composes Blocks."
 ---
 
-The Application is the portable Snap app definition. It installs Systems, validates dependency order, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for the platform kernel that runs the app.
+The Application is the engine view of a Snap App definition. It installs Blocks, validates dependency order, resolves config and secrets, extracts Primitive Definitions from authored Primitives, and prepares runtime collections for the target that runs the App.
 
 The Application is not itself the server. A development server, Cloudflare Worker kernel, Bun kernel, embedded runtime, native host, or deterministic test harness loads the Application and runs it.
 
@@ -11,7 +11,7 @@ The Application is not itself the server. A development server, Cloudflare Worke
 
 Application owns startup composition:
 
-1. Install Systems.
+1. Install Blocks.
 2. Validate dependency order.
 3. Resolve config and secret references.
 4. Extract Primitive Definitions from authored Primitives.
@@ -21,21 +21,22 @@ Application owns startup composition:
 The intended public authoring surface is a single app-definition helper:
 
 ```ts
-import { snap } from "snap";
+import { app } from "@snaplab/snap";
+import { identity } from "@snaplab/core";
+import { chat } from "@leanbod/chat";
 
-export default snap.create((app) => {
-  app.use(EmailSystem);
-  app.use(ChatSystem);
+export default app("chat", {
+  blocks: [identity(), chat()]
 });
 ```
 
-Inlining a System is valid when the System is small enough to stay readable:
+Inlining a small Block may be valid when the Block is app-specific and readable:
 
 ```ts
-export default snap.create((app) => {
-  app.use(system("chat", {
+export default app("chat", {
+  blocks: [system("chat", {
     documents: { chatRoom }
-  }));
+  })]
 });
 ```
 
@@ -50,46 +51,41 @@ Application.jobs;
 Application.documents;
 ```
 
-System-local definitions may remain accessible through their owning System:
+Block-local definitions may remain accessible through their owning Block:
 
 ```ts
-EmailSystem.jobs.sendEmail;
+chat.jobs.sendMessage;
 ```
 
 Global Application collections may use qualified keys:
 
 ```ts
-Application.jobs["email.sendEmail"];
+Application.jobs["chat.sendMessage"];
 ```
 
 ## Config composition
 
-Every System provides a Config schema. Every top-level System gets its key as a top-level config key. Dependencies may also appear as nested config objects under the depending System.
+Every Block can provide a config schema. Every top-level Block gets its key as a top-level config key. Dependencies may also appear as nested config objects under the depending Block.
 
 ```ts
-export default snap.create((app) => {
-  app.use(EmailSystem, {
-    from: "hello@example.com",
-    apiUrl: "https://sendmail.com/api/v1"
-  });
-
-  app.use(BillingSystem, {
-    email: {
-      from: "billing@example.com"
-    }
-  });
+export default app("chat", {
+  blocks: [
+    chat({
+      retentionDays: 30
+    })
+  ]
 });
 ```
 
-In this example, the billing-scoped email config inherits `apiUrl` from the global email config unless it is overridden.
+The exact config API is still being designed, but config should be validated before the App starts accepting requests or connections.
 
 ## Secrets
 
 Config values may reference secrets with strings beginning with `#!`.
 
 ```ts
-app.use(EmailSystem, {
-  apiKey: "#!sendmail.apiKey"
+chat({
+  apiKey: "#!chat.providerKey"
 });
 ```
 
@@ -100,7 +96,7 @@ If a config string begins with `#!`, Snap treats it as a secret reference. If th
 The normal development path is for the Snap CLI to load the exported app definition and choose the development platform kernel:
 
 ```bash
-snap dev packages/chat/app.ts
+snap dev chat
 ```
 
-Production deployment should use the same app definition with a deployment-specific kernel. Cloudflare Workers are a natural first target because the app definition does not need to be tied to Bun or a long-running Node process.
+Production deployment should use the same App definition with a deployment-specific target. The first target is expected to focus on Bun, while other targets such as Cloudflare will need different runtime behavior.

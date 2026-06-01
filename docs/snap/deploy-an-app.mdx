@@ -1,0 +1,63 @@
+---
+title: "Deploy an App"
+description: "Deploy a Snap App and its configured Clients."
+---
+
+Deploying a Snap App means getting the App and its configured Clients live for a selected target.
+
+<Warning>
+  Deployment is not designed yet. This page records the intended product direction without committing to a final deployment API.
+</Warning>
+
+## Deploy the current App
+
+After selecting a default App with `snap use`, deploy it:
+
+```bash
+snap deploy
+```
+
+Or deploy an App explicitly:
+
+```bash
+snap deploy chat
+```
+
+The default behavior should deploy the App and the Clients configured for that App.
+
+## First target
+
+The first deployment target is expected to be a Bun-based deployment that can run a simple App on an inexpensive VPS or EC2 instance.
+
+This target is special because Bun can bundle the server and a React web Client into a single executable. That makes it useful for a small first deployment where the App and web Client can ship together.
+
+## Other targets
+
+Other targets will not work the same way.
+
+For example, Cloudflare runs server code in V8 isolates rather than Bun. A Cloudflare App deployment may need to pair with a separately deployed web Client, such as Cloudflare Pages or another static hosting target.
+
+Snap should leave room for targets such as:
+
+1. Bun server with React bundled into one executable.
+2. Hono server paired with another frontend deployment.
+3. Cloudflare runtime paired with a separate web Client deployment.
+4. Agent Clients deployed to an agent runtime or worker runtime.
+
+## Deployment belongs to the engine
+
+Deployment support is expected to live in the Snap engine rather than inside each App directory.
+
+The App defines what it is. The deployment target defines how to run it.
+
+## Success state
+
+The first deployment milestone is:
+
+1. Deploy a chat App.
+2. Deploy its web Client.
+3. Deploy or run its agent Client.
+4. Open the live web Client.
+5. Send a message and get an agent response.
+
+That is enough to prove the deployed App and Client model before adding hosted platform management.

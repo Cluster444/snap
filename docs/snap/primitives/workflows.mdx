@@ -39,7 +39,7 @@ export const importContacts = workflow("importContacts", {
 
 A Workflow run starts through an acknowledgement-shaped Message over an identified session. The acknowledgement means the Server accepted the work. Completion, failure, and cancellation are runtime lifecycle outcomes.
 
-Domain progress should usually live in Documents owned by the System. In the example above, `ContactImports` is the durable status source. Client UI observes that Document instead of relying on a Workflow-specific progress channel.
+Domain progress should usually live in Documents owned by the Block. In the example above, `ContactImports` is the durable status source. Client UI observes that Document instead of relying on a Workflow-specific progress channel.
 
 ## Durability status
 

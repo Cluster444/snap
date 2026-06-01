@@ -1,0 +1,68 @@
+---
+title: "Create a Client"
+description: "Add human or agent Clients to a Snap App."
+---
+
+A Client is how a human, agent, or another app interacts with a Snap App.
+
+Snap should wire the Client to the App's domain surface. It should not generate a finished product UI or decide how your agent behaves.
+
+<Warning>
+  Client creation is still being designed. This page documents the intended boundary between Snap-managed wiring and user-authored implementation.
+</Warning>
+
+## Create a web Client
+
+Create a human-facing web Client:
+
+```bash
+snap client create web
+```
+
+The generated files should be minimal:
+
+```txt
+apps/
+  chat/
+    web/
+      app.tsx
+      router.tsx
+```
+
+Snap should provide the connection to the App, generated client references, and deployment wiring. The pages, components, visual design, and product behavior stay user-authored.
+
+This keeps the web Client open to coding agents and frontend specialists. They can build the interface without needing to understand or rewrite the domain model.
+
+## Create an agent Client
+
+Create an agent Client:
+
+```bash
+snap client create agent
+```
+
+For the chat milestone, the agent Client should be able to:
+
+1. Connect to the same App as the web Client.
+2. Join a room.
+3. Read messages it is allowed to read.
+4. Reply when mentioned.
+
+The agent's actual reasoning, prompts, tools, and provider choices remain implementation details of the Client.
+
+## Optional Block UI kits
+
+Some Blocks may eventually ship optional UI kits. For example, a chat Block might provide basic React components for rooms and messages.
+
+That should be optional. Installing a Block should not force an App to use a specific UI.
+
+## Why Clients matter
+
+The same App should support many Clients:
+
+1. A React web Client for humans.
+2. A CLI or TUI Client for operators.
+3. An agent Client for AI systems.
+4. Another App acting as a deterministic Client.
+
+This is the path toward mission-control style workflows, but the first milestone is only a human chatting with an agent inside one App.

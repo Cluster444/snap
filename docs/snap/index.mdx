@@ -1,63 +1,79 @@
 ---
 title: "Snap"
-description: "A framework concept for composing client/server applications from systems, primitives, and transport."
+description: "Build apps from reusable Blocks, then connect them to humans, agents, and other apps through Clients."
 ---
 
-Snap is the codename for the next direction of the engine package: a framework for building portable client/server application definitions that can run embedded in one process, distributed across servers and clients, inside deterministic simulation tests, or on platform kernels such as Cloudflare Workers.
+Snap is a framework for building apps that humans, agents, and other apps can use together.
+
+You build a Snap App by composing reusable Blocks. Then you create Clients that connect to the App: a web UI for humans, an agent client for AI systems, or another app that needs to use the App's capabilities.
 
 <Warning>
-  Snap is currently a design-stage concept. The docs describe the intended architecture, not a stable public API.
+  Snap is currently a design-stage product. These docs describe the intended developer experience, not a stable public API.
 </Warning>
 
-## The idea
+## The three ideas
 
-A Snap app is assembled from Systems and built-in Primitives. Systems contribute domain behavior and reusable support capabilities. Primitives provide common execution and data patterns. A server, worker, native host, test harness, or development runtime loads the app definition and runs it with a platform kernel.
+Snap starts with three user-facing concepts:
 
-## Architecture at a glance
+1. **Apps** are the products you run and deploy.
+2. **Blocks** are reusable domain capabilities an App can use.
+3. **Clients** are how humans, agents, or other apps interact with an App.
 
-Snap is organized around four architecture concepts:
+Engine details such as Primitives, Transport, kernels, and deployment internals sit underneath those concepts. You do not need to learn them before building your first App.
 
-1. Application: the portable app definition that installs Systems and resolves startup composition.
-2. Systems: composable units that group product behavior, support capabilities, config, dependencies, and authored Primitives.
-3. Primitives: engine-owned patterns such as Command, Workflow, Job, and Document.
-4. Transport: the lower-level runtime boundary for Sessions, Connections, Operations, dispatch, and protocol adaptation.
+## What the first App does
 
-Interfaces are the client and UI-facing layer built on generated client references, Primitive clients, and framework adapters.
+The first milestone is a chat App:
 
-## Phases
+1. Create a Snap App.
+2. Install starter Blocks such as identity and chat.
+3. Add a web Client for a human.
+4. Add an agent Client that can join the same room.
+5. Run the App locally.
+6. Deploy the App and its configured Clients.
 
-Snap has three major design phases:
+That path proves the core idea without introducing factories, orchestration, registries, or hosted control-plane features.
 
-1. Core App Model: Transport, Primitives, Systems, Application, config, and generated client references.
-2. Clients: CLI, TUI, React, Svelte, Solid, native, and agent interfaces built on the generated client surface.
-3. Orchestration: Snap Apps that can build, deploy, coordinate, and communicate with other Snap Apps.
+## CLI shape
 
-These docs focus on the Core App Model before expanding detailed Client and Orchestration material.
+The intended CLI keeps the common App path first-class:
+
+```bash
+snap create <app>
+snap use <app>
+snap dev [app]
+snap deploy [app]
+snap modify [app]
+```
+
+Blocks and Clients have their own commands when you need to add or create them:
+
+```bash
+snap block create <name>
+snap block install <name>
+
+snap client create <type>
+```
 
 ## Start exploring
 
 <CardGroup cols={2}>
-  <Card title="Architecture Overview" icon="layers" href="/architecture/overview">
-    Understand how Application, Systems, Primitives, and Transport fit together.
+  <Card title="Install" icon="download" href="/install">
+    See the intended setup path for the Snap CLI.
   </Card>
-  <Card title="Project Structure" icon="folder-tree" href="/guides/project-structure">
-    See where app definitions, product Systems, and interfaces belong.
+  <Card title="Build an App" icon="square-terminal" href="/build-an-app">
+    Create a chat App from starter Blocks and run it locally.
   </Card>
-  <Card title="Primitives" icon="blocks" href="/architecture/primitives">
-    Learn how Commands, Workflows, Jobs, and Documents build on Transport.
+  <Card title="Create a Client" icon="monitor-smartphone" href="/create-a-client">
+    Add web and agent Clients without generating product UI for you.
   </Card>
-  <Card title="Interfaces" icon="display" href="/interfaces/clients">
-    See how client APIs and framework adapters sit on top of Snap.
+  <Card title="Deploy an App" icon="rocket" href="/deploy-an-app">
+    Understand how Snap plans to deploy Apps and configured Clients.
   </Card>
-  <Card title="Build a System" icon="package" href="/guides/build-a-system">
-    See the intended authoring flow for defining reusable Snap Systems.
+  <Card title="Apps" icon="boxes" href="/concepts/apps">
+    Learn what belongs in an App definition.
+  </Card>
+  <Card title="Blocks" icon="blocks" href="/concepts/blocks">
+    Learn how reusable domain models fit into Apps.
   </Card>
 </CardGroup>
-
-## What this site answers
-
-This site is organized around three questions:
-
-1. How do you build a Snap App?
-2. How do you author reusable Systems?
-3. How do Snap internals turn definitions into running server/client behavior?

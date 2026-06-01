@@ -7,17 +7,18 @@ This page tracks the current state of the Snap vision.
 
 ## Phases
 
-1. Core App Model: Transport, Primitives, Systems, Application, config, and generated client references.
-2. Clients: CLI, TUI, React, Svelte, Solid, native, and agent interfaces built on the generated client surface.
-3. Orchestration: Snap Apps that can build, deploy, coordinate, and communicate with other Snap Apps.
+1. App, Block, and Client model: the user-facing path for building and using Snap Apps.
+2. Engine model: Transport, Primitives, Application collection, config, and generated client references.
+3. Deployment model: Bun-first local/server deployment, then other runtime targets.
+4. Later orchestration: Snap Apps that can build, deploy, coordinate, and communicate with other Snap Apps.
 
-The Core App Model should be clarified before the docs expand detailed Client and Orchestration material.
+The App, Block, and Client model should be clarified before the docs expand factory, orchestration, registry, or hosted platform material.
 
 ## In scope for the core concept
 
 1. Transport with Sessions, Connections, Requests, Messages, and Events.
 2. Built-in Primitives for Command, Workflow, Job, and Document.
-3. Systems as composable application and package units.
+3. Blocks as composable domain units.
 4. Application as the assembly root.
 5. Config composition and secret references.
 6. Generated client references as the client boundary for authored primitives.
@@ -26,7 +27,7 @@ The Core App Model should be clarified before the docs expand detailed Client an
 
 1. `Primitive` is an internal engine concept, not public application API.
 2. Built-in Primitive runtimes are always available at Application initialization.
-3. Systems contribute authored Primitives through hard-coded slots.
+3. Blocks contribute authored Primitives through hard-coded slots.
 4. Every Primitive Definition has a stable `key`.
 5. Connections require an Identified Session by default.
 6. Operation Policies belong in server bindings/runtime, not shared client-facing Operation Definitions.
@@ -47,7 +48,7 @@ The Core App Model should be clarified before the docs expand detailed Client an
 
 1. User-defined Primitive types.
 2. Provider/controller reconciliation.
-3. Goal and Constraint Systems.
+3. Goal and Constraint Blocks.
 4. Detailed Client interface guides.
 5. Fleet orchestration across many Snaps.
 6. Compile-time global dot access for every collected Primitive Definition.
